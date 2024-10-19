@@ -41,6 +41,24 @@ class Data:
     users = set()
 
 
+# Метод для добавления и изменения "знакомых"
+@dp.message(Command('new_acquaintance'))
+@security()
+async def _new_acquaintance(message: Message):
+    if await developer_command(message): return
+    if message.reply_to_message and message.reply_to_message.caption:
+        id = int(message.reply_to_message.caption.split('\n', 1)[0].replace("ID: ", ""))
+        name = message.text.split(maxsplit=1)[1]
+    else:
+        id, name = message.text.split(maxsplit=2)[1:]
+    if await db.execute("SELECT id FROM acquaintances WHERE id=?", (id,)):
+        await db.execute("UPDATE acquaintances SET name=? WHERE id=?", (name, id))
+        await message.answer("Данные знакомого изменены")
+    else:
+        await db.execute("INSERT INTO acquaintances VALUES(?, ?)", (id, name))
+        await message.answer("Добавлен новый знакомый!")
+
+
 # Метод для отправки сообщения от имени бота
 @dp.message(F.reply_to_message.__and__(F.chat.id == OWNER).__and__(F.reply_to_message.text.startswith("ID")))
 @security()
@@ -104,23 +122,6 @@ async def _stop(message: Message):
 async def _db(message: Message):
     if await developer_command(message): return
     await message.answer_document(FSInputFile(resources_path(db.db_path)))
-
-
-@dp.message(Command('new_acquaintance'))
-@security()
-async def _new_acquaintance(message: Message):
-    if await developer_command(message): return
-    if message.reply_to_message and message.reply_to_message.caption:
-        id = int(message.reply_to_message.caption.split('\n', 1)[0].replace("ID: ", ""))
-        name = message.text.split(maxsplit=1)[1]
-    else:
-        id, name = message.text.split(maxsplit=2)[1:]
-    if await db.execute("SELECT id FROM acquaintances WHERE id=?", (id,)):
-        await db.execute("UPDATE acquaintances SET name=? WHERE id=?", (name, id))
-        await message.answer("Данные знакомого изменены")
-    else:
-        await db.execute("INSERT INTO acquaintances VALUES(?, ?)", (id, name))
-        await message.answer("Добавлен новый знакомый!")
 
 
 @dp.message(Command('review'))
@@ -199,6 +200,14 @@ async def _start(message: Message, state: FSMContext):
         await message.answer("Команда /calculate_chemistry и /task_chemistry рассчитывают значения по химии "
                              "(молекулярную массу, массовую долю, молярный объем), уравнивают коэффициенты в "
                              "уравнении реакции и могут расставить индексы в веществе")
+    elif message.text == "/start setting_coefficients":
+        await state.set_state(UserState.setting_coefficients)
+        await message.answer("Отправьте уравнение реакции, в которой необходимо расставить "
+                             "коэффициенты. Например: `C + O2 = CO2`", parse_mode=markdown)
+    elif message.text == "/start formulation_of_chemical_formulas":
+        await state.set_state(UserState.formulation_of_chemical_formulas)
+        await message.answer("Отправьте формулу вещества, в котором необходимо расставить "
+                             "индексы. Например: `HO`", parse_mode=markdown)
 
 
 @dp.message(Command('help'))
