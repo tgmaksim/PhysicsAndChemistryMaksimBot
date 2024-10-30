@@ -1,3 +1,4 @@
+
 import re
 import math
 import itertools
@@ -183,7 +184,7 @@ class ResultCalculate:
 # Класс нужен для определения состояния пользователя в данном боте,
 # например: пользователь должен отправить отзыв в следующем сообщении
 class UserState(StatesGroup):
-    review = State('review')
+    feedback = State('feedback')
 
     molecular_weight = State('molecular_weight')
     mass_fraction1 = State('mass_fraction1')
