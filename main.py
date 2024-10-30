@@ -227,7 +227,7 @@ async def _help_button(callback_query: CallbackQuery):
 
 
 async def help(message: Message):
-    await message.answer("/review - оставить отзыв или предложение\n"
+    await message.answer("/feedback - оставить отзыв или предложение\n"
                          "/calculate_chemistry - вычисление величин в химии\n"
                          "/task_chemistry - решение задач по химии\n"
                          "/physics7 - физика 7 класса\n"
