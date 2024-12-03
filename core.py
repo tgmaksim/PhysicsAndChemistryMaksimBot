@@ -2,7 +2,7 @@ OWNER = 5128609241
 NAME = "PhysicsAndChemistryMaksimBot"
 SITE = "https://tgmaksim.ru/проекты/физика-и-химия"
 subscribe = "https://t.me/+gaEdiKcz81g1NTAy"
-channel = "@MaksimMyBots"
+channel = "@tgmaksim_ru"
 
 markdown = "Markdown"
 html = "HTML"
